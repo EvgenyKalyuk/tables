@@ -2,7 +2,7 @@ import { reducerPresetData } from 'helpers/handlers';
 import { EVENTS_VACANCIES } from '../actions/vacancies.actions';
 
 const initState = {
-  rubrics: [],
+  vacancies: [],
   metadata: {},
 };
 
