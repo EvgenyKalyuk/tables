@@ -20,6 +20,8 @@ export const RubricsList = ({ data }) => {
     count: counts.vacancy,
   }));
 
+  tableData.sort((a, b) => b.count - a.count);
+
   return (
     <Table
       columns={columns}

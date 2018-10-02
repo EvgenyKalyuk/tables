@@ -83,7 +83,6 @@ export class VacanciesContainer extends React.Component {
       });
     });
 
-
     this.setState({
       list,
     });

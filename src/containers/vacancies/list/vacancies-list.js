@@ -19,6 +19,8 @@ export const VacanciesList = ({ data }) => {
     count: data[item],
   }));
 
+  tableData.sort((a, b) => b.count - a.count);
+
   return (
     <Table columns={columns} data={tableData} />
   );

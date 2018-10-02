@@ -6,7 +6,6 @@
     "@babel/plugin-proposal-object-rest-spread",
     "@babel/plugin-transform-react-inline-elements",
     "transform-react-constant-elements",
-    "transform-react-remove-prop-types",
     [
       "module-resolver",
       {
