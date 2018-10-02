@@ -1,0 +1,1 @@
+export { RubricsContainer } from './rubrics.container';

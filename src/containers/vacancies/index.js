@@ -1,0 +1,1 @@
+export { VacanciesContainer } from './vacancies.container';
