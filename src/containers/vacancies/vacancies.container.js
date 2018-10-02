@@ -1,24 +1,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { vacanciesService } from './vacancies.service';
+import { bindActionCreators } from 'redux';
+import { getVacancies, clearState } from 'store/actions/vacancies.actions';
 import { VacanciesList } from './list';
 
-const mapStateToProps = ({ geoState }) => ({
+const mapStateToProps = ({ geoState, vacanciesState }) => ({
   geoState,
+  vacanciesState,
 });
 
-@vacanciesService
-@connect(mapStateToProps)
+const mapDispatchToProps = dispatch => ({
+  getVacancies: bindActionCreators(getVacancies, dispatch),
+  clearState: bindActionCreators(clearState, dispatch),
+});
+
+@connect(mapStateToProps, mapDispatchToProps)
 export class VacanciesContainer extends React.Component {
   static propTypes = {
     getVacancies: PropTypes.func,
+    clearState: PropTypes.func,
     geoState: PropTypes.object,
+    vacanciesState: PropTypes.object,
   };
 
   static defaultProps = {
     getVacancies: Function.prototype,
+    clearState: Function.prototype,
     geoState: {},
+    vacanciesState: {},
   };
 
   constructor(props) {
@@ -62,8 +72,13 @@ export class VacanciesContainer extends React.Component {
     }
   }
 
-  createTop = (data) => {
-    const { vacancies } = data;
+  componentWillUnmount() {
+    this.props.clearState();
+  }
+
+  createTop = () => {
+    const { vacanciesState } = this.props;
+    const { vacancies } = vacanciesState;
 
     const list = {};
 
@@ -89,15 +104,15 @@ export class VacanciesContainer extends React.Component {
   };
 
   handleGetVacancies = async ({ id, period }) => {
-    const { getVacancies } = this.props;
+    const { getVacancies: getVacanciesAction } = this.props;
 
     try {
-      const data = await getVacancies({
+      await getVacanciesAction({
         fields: ['header'],
         geoId: id,
         period,
       });
-      this.createTop(data);
+      this.createTop();
     } catch (e) {
       this.setState({
         isError: true,

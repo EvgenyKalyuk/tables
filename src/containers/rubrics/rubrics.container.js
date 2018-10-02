@@ -1,25 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { rubricsService } from './rubrics.service';
+import { bindActionCreators } from 'redux';
+import { getRubrics, clearState } from 'store/actions/rubrics.actions';
 
 import { RubricsList } from './list';
 
-const mapStateToProps = ({ geoState }) => ({
+const mapStateToProps = ({ geoState, rubricsState }) => ({
   geoState,
+  rubricsState,
 });
 
-@rubricsService
-@connect(mapStateToProps)
+const mapDispatchToProps = dispatch => ({
+  getRubrics: bindActionCreators(getRubrics, dispatch),
+  clearState: bindActionCreators(clearState, dispatch),
+});
+
+@connect(mapStateToProps, mapDispatchToProps)
 export class RubricsContainer extends React.Component {
   static propTypes = {
     getRubrics: PropTypes.func,
+    clearState: PropTypes.func,
     geoState: PropTypes.object,
+    rubricsState: PropTypes.object,
   };
 
   static defaultProps = {
     getRubrics: Function.prototype,
+    clearState: Function.prototype,
     geoState: {},
+    rubricsState: {},
   };
 
   constructor(props) {
@@ -30,8 +40,6 @@ export class RubricsContainer extends React.Component {
     const { id } = geo[0] || {};
 
     this.state = {
-      metadata: {},
-      rubrics: [],
       isError: false,
       locationId: id,
     };
@@ -63,19 +71,19 @@ export class RubricsContainer extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.clearState();
+  }
+
   handleGetRubrics = async (id) => {
-    const { getRubrics } = this.props;
+    const { getRubrics: getRubricsAction } = this.props;
 
     try {
-      const data = await getRubrics({
+      await getRubricsAction({
         fields: [
           'id', 'title', 'counts',
         ],
         geoId: id,
-      });
-
-      this.setState({
-        ...data,
       });
     } catch (e) {
       this.setState({
@@ -85,7 +93,8 @@ export class RubricsContainer extends React.Component {
   };
 
   render() {
-    const { rubrics } = this.state;
+    const { rubricsState } = this.props;
+    const { rubrics = [] } = rubricsState;
 
     return (
       <RubricsList data={rubrics} />
