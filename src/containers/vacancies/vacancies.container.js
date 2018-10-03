@@ -29,6 +29,8 @@ export class VacanciesContainer extends React.Component {
     const { id } = geo[0] || {};
 
     this.state = {
+      vacancies: [],
+      metadata: {},
       list: {},
       isError: false,
       locationId: id,
@@ -40,10 +42,12 @@ export class VacanciesContainer extends React.Component {
     const { geo = [] } = geoState;
     const { id } = geo[0] || {};
 
-    this.handleGetVacancies({
-      id,
-      period: 'today',
-    });
+    if (id) {
+      this.handleGetVacancies({
+        id,
+        period: 'today',
+      });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -62,8 +66,8 @@ export class VacanciesContainer extends React.Component {
     }
   }
 
-  createTop = (data) => {
-    const { vacancies } = data;
+  createTop = () => {
+    const { vacancies } = this.state;
 
     const list = {};
 
@@ -88,7 +92,7 @@ export class VacanciesContainer extends React.Component {
     });
   };
 
-  handleGetVacancies = async ({ id, period }) => {
+  handleGetVacancies = async ({ id, period, offset = 0 }) => {
     const { getVacancies } = this.props;
 
     try {
@@ -96,8 +100,28 @@ export class VacanciesContainer extends React.Component {
         fields: ['header'],
         geoId: id,
         period,
+        isNewOnly: true,
+        limit: 100,
+        offset,
       });
-      this.createTop(data);
+
+      this.setState(state => ({
+        ...state,
+        vacancies: [
+          ...state.vacancies,
+          ...data.vacancies,
+        ],
+      }));
+
+      const { metadata = {} } = data;
+      const { resultset = {} } = metadata;
+      const { count } = resultset;
+
+      if (this.state.vacancies.length < count) {
+        return this.handleGetVacancies({ id, offset: offset + 100, period });
+      }
+
+      return this.createTop();
     } catch (e) {
       this.setState({
         isError: true,
@@ -107,6 +131,8 @@ export class VacanciesContainer extends React.Component {
 
   render() {
     const { list } = this.state;
+
+    console.log(this.state);
 
     return (
       <VacanciesList data={list} />

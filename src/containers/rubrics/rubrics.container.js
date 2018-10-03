@@ -69,6 +69,7 @@ export class RubricsContainer extends React.Component {
           'id', 'title', 'counts',
         ],
         geoId: id,
+        isNewOnly: true,
       });
 
       this.setState({

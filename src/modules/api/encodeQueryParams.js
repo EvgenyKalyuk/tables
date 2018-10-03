@@ -26,7 +26,7 @@ export function createQueryParams(params) {
     const name = Object.keys(param)[0];
     const value = param[name];
 
-    if (!value) {
+    if (typeof value === 'undefined') {
       return acc;
     }
 
