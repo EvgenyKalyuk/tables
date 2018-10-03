@@ -50,10 +50,12 @@ export class VacanciesContainer extends React.Component {
     const { geo = [] } = geoState;
     const { id } = geo[0] || {};
 
-    this.handleGetVacancies({
-      id,
-      period: 'today',
-    });
+    if (id) {
+      this.handleGetVacancies({
+        id,
+        period: 'today',
+      });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -61,7 +63,7 @@ export class VacanciesContainer extends React.Component {
     const { geo = [] } = geoState;
     const { id } = geo[0] || {};
 
-    if (this.state.locationId !== id) {
+    if (id && this.state.locationId !== id) {
       this.setState({
         locationId: id,
       });
@@ -103,16 +105,38 @@ export class VacanciesContainer extends React.Component {
     });
   };
 
-  handleGetVacancies = async ({ id, period }) => {
+  handleGetVacancies = async ({
+    id,
+    period,
+    offset = 0,
+    preData = [],
+  }) => {
     const { getVacancies: getVacanciesAction } = this.props;
 
     try {
-      await getVacanciesAction({
+      const { payload } = await getVacanciesAction({
         fields: ['header'],
         geoId: id,
         period,
+        isNewOnly: true,
+        limit: 100,
+        offset,
+        preData,
       });
-      this.createTop();
+      const { vacancies = [], metadata = {} } = payload;
+      const { resultset = {} } = metadata;
+      const { count } = resultset;
+
+      if (vacancies.length < count) {
+        return this.handleGetVacancies({
+          id,
+          period,
+          offset: offset + 100,
+          preData: payload.vacancies,
+        });
+      }
+
+      return this.createTop();
     } catch (e) {
       this.setState({
         isError: true,

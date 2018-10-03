@@ -39,8 +39,6 @@ export class RubricsContainer extends React.Component {
     const { geo = [] } = geoState;
     const { id } = geo[0] || {};
 
-    console.log(geo);
-
     this.state = {
       isError: false,
       locationId: id,
@@ -51,7 +49,7 @@ export class RubricsContainer extends React.Component {
     const { geoState } = this.props;
     const { geo = [] } = geoState;
     const { id } = geo[0] || {};
-    console.log(id);
+
     if (id) {
       this.handleGetRubrics(id);
     }
