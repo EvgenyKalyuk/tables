@@ -43,10 +43,7 @@ export class RubricsContainer extends React.Component {
     const { id } = geo[0] || {};
 
     if (id) {
-      this.handleGetRubrics({
-        id,
-        period: 'today',
-      });
+      this.handleGetRubrics(id);
     }
   }
 
