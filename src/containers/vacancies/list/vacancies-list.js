@@ -14,7 +14,8 @@ const columns = [
 ];
 
 export const VacanciesList = ({ data }) => {
-  const tableData = Object.keys(data).map(item => ({
+  const tableData = Object.keys(data).map((item, index) => ({
+    id: index,
     word: item,
     count: data[item],
   }));
